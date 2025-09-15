@@ -6,8 +6,15 @@ import Pub2 from "../../components/pub2/Pub2";
 import Footers from "../../components/footers/Footers";
 import { Outlet } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
+import { useEffect } from "react";
+import Aos from "aos";
+import "aos/dist/aos.css";
 
 const HomeUser: React.FC = () => {
+
+     useEffect(() => {
+       Aos.init({ duration: 1000 }); // tu peux configurer la durée par défaut
+     }, []);
   return (
     <Fragment>
       <div className=" relative bg-cover bg-center lg:min-h-screen    ">

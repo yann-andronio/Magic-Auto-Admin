@@ -21,14 +21,14 @@ export default function Headerconseils() {
 
         <a
           href="#guides"
-          className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-full transition-transform transform hover:scale-105"
+          className="bg-[#f8c53b] hover:bg-[#e6b02e] text-[#333] px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 hover:scale-105"
         >
           Voir les guides
         </a>
       </div>
 
       <div className="hidden lg:flex md:w-1/2 justify-end items-end relative">
-        <img src={vamepImage} alt="" className="object-contain" />
+        <img src={vamepImage} alt="" />
       </div>
     </div>
   );

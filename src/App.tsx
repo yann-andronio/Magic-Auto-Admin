@@ -4,13 +4,10 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 
 function App() {
-  useEffect(() => {
-    Aos.init({ duration: 1000 }); // tu peux configurer la durée par défaut
-  }, []);
+ 
 
   return (
     <>
-      {/* Navbar ou Footer global ici */}
       <Outlet />
     </>
   );

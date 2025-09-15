@@ -5,7 +5,10 @@ export default function Home() {
     <div className="">
       <header>
         <Header />
-      </header>
+          </header>
+          <main>
+              
+          </main>
     </div>
   );
 }

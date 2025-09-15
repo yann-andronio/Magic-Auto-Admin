@@ -14,7 +14,7 @@ import HomeUser from "./pages/homesuser/HomeUser";
 import Connexion from "./pages/connexion/Connexion";
 import Inscription from "./pages/inscription/Inscription";
 import Conseils from "./pages/conseils/Conseils";
-import Testes from "./pages/testss/Testes";
+
 import Reservation from "./pages/reservation/Reservation";
 import Homeadmin from "./pages/Admins/homeadmin/Homeadmin.tsx";
 import Dashboard from "./pages/Admins/dashboard/Dashboard.tsx";

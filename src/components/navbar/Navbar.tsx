@@ -1,16 +1,31 @@
 import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Responsivenavbar from "../responsivenavbar/Responsivenavbar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [menuopen, setmenuopen] = useState<boolean>(false);
+  const location = useLocation();
 
   const navItems = [
     { name: "Accueil", path: "/home" },
     { name: "Réservation", path: "/home/reservation" },
     { name: "Conseils", path: "/home/conseils" },
   ];
+
+  const navStyles = {
+    onhome: {
+      active: "text-yellow-600 underline decoration-yellow-600",
+      inactive: "text-white hover:text-yellow-600 no-underline",
+    },
+    onOther: {
+      active: "text-blue-600 underline decoration-blue-600",
+      inactive: "text-black hover:text-blue-500 no-underline",
+    },
+  };
+
+  const currentStyles =location.pathname === "/home" ? navStyles.onhome : navStyles.onOther;
+  const styleDeBase ="font-semibold transition-colors duration-300 decoration-2 underline-offset-8";
 
   return (
     <nav className="absolute w-full bg-transparent dark:bg-transparent">
@@ -34,13 +49,7 @@ const Navbar: React.FC = () => {
                   key={index}
                   to={item.path}
                   end={item.path === "/home"}
-                  className={({ isActive }) =>
-                    `font-semibold transition-colors duration-300 ${
-                      isActive
-                        ? "text-blue-600 underline decoration-blue-600 decoration-2 underline-offset-8"
-                        : "hover:text-blue-500 dark:hover:text-blue-400"
-                    }`
-                  }
+                  className={({ isActive }) =>`${styleDeBase} ${isActive ? currentStyles.active : currentStyles.inactive}`}
                 >
                   {item.name}
                 </NavLink>
