@@ -1,45 +1,32 @@
 import { Fragment } from "react/jsx-runtime";
-
-import Header from "../../components/header/Header";
-import FeaturesSection from "../../components/featuresection/FeaturesSection";
-import Pub2 from "../../components/pub2/Pub2";
-import Footers from "../../components/footers/Footers";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
 import { useEffect } from "react";
 import Aos from "aos";
 import "aos/dist/aos.css";
+import Footer from "../../components/footer/Footer";
+import "./homeuser.css"
+
 
 const HomeUser: React.FC = () => {
-
-     useEffect(() => {
-       Aos.init({ duration: 1000 }); // tu peux configurer la durée par défaut
-     }, []);
+  useEffect(() => {
+    Aos.init({ duration: 1000 });
+  }, []);
+    
+  const  location=useLocation()
   return (
     <Fragment>
-      <div className=" relative bg-cover bg-center lg:min-h-screen    ">
+      <div className="flex flex-col min-h-screen">
         <Navbar />
 
         <main>
           <Outlet />
         </main>
+        {location.pathname == "/home/reservation" ? null  : <footer className=" pt-0 bg-transparent  foot">
+          <Footer />
+        </footer>}
+       
       </div>
-
-      {/* <div className="header pt-16 ">
-                <Header />
-            </div>
-            <main className={``}>
-                <div className="pub1 p-5">
-                    <FeaturesSection />
-                </div>
-                <div className="pub2 p-5">
-                    <Pub2 />
-                </div>
-                <div className="pub2 ">
-                    <Footers />
-                </div>
-
-            </main> */}
     </Fragment>
   );
 };

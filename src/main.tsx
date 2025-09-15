@@ -1,20 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import "./i18n";
 import { Provider } from "react-redux";
 import store from "./stores/Store.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "./stores/Store.tsx";
 
-// Pages
 import App from "./App.tsx";
 import HomeUser from "./pages/homesuser/HomeUser";
 import Connexion from "./pages/connexion/Connexion";
 import Inscription from "./pages/inscription/Inscription";
 import Conseils from "./pages/conseils/Conseils";
-
 import Reservation from "./pages/reservation/Reservation";
 import Homeadmin from "./pages/Admins/homeadmin/Homeadmin.tsx";
 import Dashboard from "./pages/Admins/dashboard/Dashboard.tsx";
