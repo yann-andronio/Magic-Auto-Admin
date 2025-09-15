@@ -1,0 +1,7 @@
+.f1:hover , .f2:hover , .f3:hover{
+    transform: scale(1.03);
+    transition: 0.5s
+}
+.f1 , .f2 , .f3 , .f4{
+    transition: 1s;
+}
