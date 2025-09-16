@@ -9,8 +9,8 @@ import { persistor } from "./stores/Store.tsx";
 
 import App from "./App.tsx";
 import HomeUser from "./pages/homesuser/HomeUser";
-import Connexion from "./pages/connexion/Connexion";
-import Inscription from "./pages/inscription/Inscription";
+import Connexion from "./auth/connexion/Connexion.tsx";
+import Inscription from "./auth/inscription/Inscription.tsx";
 import Conseils from "./pages/conseils/Conseils";
 import Reservation from "./pages/reservation/Reservation";
 import Homeadmin from "./pages/Admins/homeadmin/Homeadmin.tsx";

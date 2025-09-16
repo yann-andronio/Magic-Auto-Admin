@@ -9,7 +9,7 @@ export default function Home() {
       </header>
       <main>
         <section id="Services" className="relative py-20 px-6 mt-6">
-          {/* Titre */}
+          {/* titre */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-[#759eee] dark:text-white mb-4">
               Nos Services
