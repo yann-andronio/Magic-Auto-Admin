@@ -12,7 +12,7 @@ function Homeadmin(): JSX.Element {
   return (
     <div className="parents flex h-screen">
       <div
-        className={`bg-[#895256] fixed top-0 left-0 min-h-screen flex flex-col items-center p-7  
+        className={`bg-[#E6E6FA] fixed top-0 left-0 min-h-screen flex flex-col items-center p-7  
             ${
               closeBar ? "w-[5rem]" : "w-[16rem]"
             } transition-width  duration-[600ms] ease-in-out`}
