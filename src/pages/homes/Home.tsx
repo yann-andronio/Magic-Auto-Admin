@@ -26,6 +26,8 @@ export default function Home() {
               <div
                 key={index}
                 className={`rounded-xl p-8 shadow-lg transition-shadow cursor-default bg-gradient-to-r hover:shadow-2xl ${service.gradient}`}
+                data-aos="zoom-in"
+                data-aos-duration="1500"
               >
                 {/* header card*/}
                 <div className="flex items-center gap-4 mb-4">

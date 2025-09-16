@@ -1,28 +1,4 @@
-/* .boxparentsreserve{
-    background-color: red;
-} */
-.time[type="time"] {
-    background-color: #f0fdf4;
-    color: #22C55E; 
-    border: 1px solid #22C55E;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    transition: box-shadow 0.2s ease;
-}
 
-.time[type="time"]:focus {
-    border-color: #16a34a; /* Couleur de la bordure au focus */
-}
-
-.notes{
-    
-    height: 287px;
-}
-.notes:focus{
-    border: none;
-}
 
 
 

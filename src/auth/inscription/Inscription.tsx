@@ -191,7 +191,7 @@ const Inscription: React.FC = () => {
               type="submit"
               className="bg-[#fdb73d] hover:bg-gradient-to-r hover:from-[#f59e0b] hover:to-[#facc15] text-white font-bold py-3 px-4 rounded-full focus:outline-none focus:shadow-outline w-full transition-all duration-300 ease-in-out transform hover:scale-105"
             >
-              Se connecter
+              S'inscrire
             </button>
           </form>
 
@@ -201,7 +201,7 @@ const Inscription: React.FC = () => {
               to={"/"}
               className="text-[#f8c53b] font-semibold hover:text-[#ffd866] hover:underline transition-colors duration-300 ease-in-out hover:shadow-lg hover:shadow-yellow-300/30 px-1 rounded"
             >
-              Créez en un !
+              se connecter!
             </Link>
           </h2>
         </div>

@@ -67,6 +67,8 @@ export default function Home() {
               key={index}
               className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
               onClick={() => toggleOpen(index)}
+              data-aos="zoom-in"
+              data-aos-duration="1000"
             >
               <div
                 className="p-6 flex items-center justify-between"

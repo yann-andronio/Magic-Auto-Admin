@@ -19,20 +19,17 @@ const Reservation = () => {
         setModalIsOpen(true);
 
         setTimeout(() => {
-       
             setModalIsOpen(false);
         }, 2300);
 
         setTimeout(() => {
-        navigate("/");
+        navigate("/home");
         }, 2600);
 
     };
     return (
         <Fragment>
-            <div className=" overflow-hidden  ">
-
-             
+            <div className=" overflow-y-auto  ">
 
                 <div className="form flex justify-center items-center h-screen">
                     <div className="w-full max-w-6xl">
@@ -52,7 +49,7 @@ const Reservation = () => {
                             transition={{ duration: 0.6, ease: 'easeInOut' }}
                         >
                             <Lottie animationData={message} style={{ width: "20%" }} loop={false} />
-                            <div className="text-[#22C55E] ps-4 text-sm font-bold"> Réservation envoyée avec succès </div>
+                            <div className="text-[#22C55E] ps-4 text-sm font-bold"> Réservation fait avec    succès </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

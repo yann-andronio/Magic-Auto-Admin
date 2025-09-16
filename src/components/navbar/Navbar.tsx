@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
     },
     onOther: {
       active: "text-blue-600 underline decoration-blue-600",
-      inactive: "text-black hover:text-blue-500 no-underline",
+      inactive: "text-[#292929] hover:text-blue-500 no-underline",
     },
   };
 

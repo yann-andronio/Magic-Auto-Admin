@@ -6,12 +6,17 @@ export default function Header() {
     <div
       className={` ${s.arriereplan} flex flex-row h-screen justify-center items-center overflow-hidden bg-[#759EEE] lg:bg-transparent `}
     >
-      <div className="hidden lg:flex md:w-1/2 justify-start items-start relative">
+      <div
+        className="hidden lg:flex md:w-1/2 justify-start items-start relative"
+        data-aos="fade-right"
+        data-aos-duration="2000"
+      >
         <img src="./assets/image/deco/Moto.png" alt="" />
       </div>
       <div
         className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative z-10"
         data-aos="fade-left"
+        data-aos-duration="2000"
       >
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
           Bienvenue chez <span className="text-[#f8c53b]">Magic Auto</span>

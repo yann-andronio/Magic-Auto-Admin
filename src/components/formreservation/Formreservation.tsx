@@ -1,16 +1,15 @@
-//  mode: "onChange", :  valider les champs chaque fois que leur valeur change.
-// toISOString():méthode JavaScript qui convertit un objet Date en une chaîne de caractères au format de date et heure 
 import React, { Fragment, useState } from "react";
 import { Button, Step, StepLabel, Stepper, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-
+import { format } from "date-fns";
+import { calculPriceParking, tarifsParJour, VehicleType,} from "../../utils/calculPriceParking";
 import { Calendarfilter } from "../../components/calendarfilter/Calendarfilter";
 import ParkingRestant from "../parkingrest/Parkingreste";
 
-//  étapes de la réservation
+// Étapes de la réservation
 const steps = [
   "Informations Personnelles & Lieu de parking",
   "Disponibilité des places",
@@ -20,21 +19,23 @@ const steps = [
   "Résumé de la réservation",
 ];
 
+
 const validationSchema = Yup.object({
   name: Yup.string().required("Le nom est requis"),
   email: Yup.string().email("Email invalide").required("L'email est requis"),
   phone: Yup.string().required("Le numéro de téléphone est requis"),
   address: Yup.string().required("L'adresse est requise"),
   lieuDeParking: Yup.string().required("Le lieu de parking est requis"),
-  typevehicule: Yup.string().required("Le type de véhicule est requis"),
+  typevehicule: Yup.string().required("Le type de véhicule est requis").oneOf(Object.keys(tarifsParJour) as VehicleType[]),
   modelvoiture: Yup.string().required("Le modèle de voiture est requis"),
   matriculationvehicule: Yup.string().required("La plaque d'immatriculation est requise"),
   time: Yup.string().required("L'heure est requise"),
   notes: Yup.string(),
 });
 
-const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleModalSubmit, }) => {
-    
+const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
+  handleModalSubmit,
+}) => {
   const [activeStep, setActiveStep] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
@@ -45,7 +46,8 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
   });
 
   const watchedFields = watch();
-  const selectedlieuDeParking = watchedFields.lieuDeParking; 
+  const selectedlieuDeParking = watchedFields.lieuDeParking;
+  const typeVehicule = watchedFields.typevehicule;
 
   const isStepValid = () => {
     switch (activeStep) {
@@ -74,7 +76,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
           !errors.matriculationvehicule
         );
       case 3:
-        return startDate && endDate;
+        return startDate && endDate && startDate <= endDate;
       case 4:
         return watchedFields.time && !errors.time;
       case 5:
@@ -97,12 +99,14 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
       ...data,
       startDate: startDate?.toISOString(),
       endDate: endDate?.toISOString(),
+      prixTotal: calculPriceParking(startDate, endDate, typeVehicule),
     };
     handleModalSubmit();
     console.log(finalData);
   };
 
   const isFinalStep = activeStep === steps.length - 1;
+  const prixCalculated = calculPriceParking(startDate, endDate, typeVehicule);
 
   return (
     <Fragment>
@@ -111,21 +115,18 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-[#759eee] via-[#33476c] to-[#1c273a] rounded-2xl shadow-2xl flex w-full max-w-6xl m-auto"
+          className="lg:bg-gradient-to-br from-[#759eee] via-[#33476c] to-[#1c273a] justify-center lg:justify-normal  shadow-2xl flex w-full max-w-6xl m-auto"
         >
           {/* Stepper à gauche */}
-          <div className="w-1/3 p-6 bg-[#33476c]/70 backdrop-blur-md text-white">
-            <h3 className="text-lg font-semibold mb-6 text-[#f8c53b]">
+          <div className="w-1/3 p-6 bg-gradient-to-br from-[#759eee] to-[#33476c] hidden lg:block text-white">
+            <h3 className="text-xl font-semibold mb-6 text-[#ffff]">
               Étapes de Réservation
             </h3>
             <Stepper
               activeStep={activeStep}
               orientation="vertical"
               sx={{
-                "& .MuiStepLabel-label": {
-                  color: "#f8c53b",
-                  fontWeight: "500",
-                },
+                "& .MuiStepLabel-label": { color: "white", fontWeight: "500" },
                 "& .MuiStepConnector-line": {
                   borderLeftWidth: "3px",
                   borderColor: "#759eee",
@@ -137,9 +138,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
                   },
                 },
                 "& .Mui-completed": {
-                  "& .MuiStepLabel-label": {
-                    color: "white",
-                  },
+                  "& .MuiStepLabel-label": { color: "white" },
                 },
               }}
             >
@@ -152,14 +151,12 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
           </div>
 
           {/* Formulaire à droite */}
-          
-          <div className="w-2/3 p-8 bg-white overflow-hidden">
+          <div className="lg:w-2/3 p-8 bg-white overflow-hidden">
             <h3 className="text-3xl font-bold mb-6 text-[#33476c]">
               Réservation de Parking
             </h3>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                          
               {activeStep === 0 && (
                 <motion.div
                   key="step-0"
@@ -358,9 +355,9 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
                   <h4 className="text-xl font-semibold text-[#759eee]">
                     {steps[activeStep]}
                   </h4>
-                  <Box className="bg-gray-100 p-6 rounded-xl shadow-md">
+                  <Box className="bg-gray-100 p-3 rounded-xl shadow-md">
                     <div className="flex flex-wrap gap-4">
-                      {/* Section Infos Personnelles & Parking */}
+                      {/* info pers et Parking */}
                       <div className="bg-white p-4 rounded-lg shadow-sm flex-1 min-w-[280px]">
                         <h5 className="font-bold text-[#33476c] mb-2">
                           Informations Personnelles
@@ -434,7 +431,8 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
                               Véhicule :
                             </span>{" "}
                             <span className="text-gray-900">
-                              {watchedFields.modelvoiture} ({watchedFields.typevehicule})
+                              {watchedFields.modelvoiture} (
+                              {watchedFields.typevehicule})
                             </span>
                           </p>
                           <p>
@@ -455,6 +453,29 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({ handleMo
                               </span>
                             </p>
                           )}
+                        </div>
+                      </div>
+
+                      {/* Section pour le prix */}
+                      <div className="bg-white p-4 rounded-lg shadow-sm flex-1 min-w-[280px]">
+                        <h5 className="font-bold text-[#33476c] mb-2">
+                          Récapitulatif de paiement
+                        </h5>
+                        <div className="space-y-2 text-sm">
+                          <p className="font-bold text-lg text-green-600">
+                            <span className="font-semibold text-gray-700">
+                              Prix total :
+                            </span>{" "}
+                            <span className="text-green-600">
+                              {prixCalculated !== null
+                                ? `${prixCalculated} Ar`
+                                : "Prix non disponible"}
+                            </span>
+                          </p>
+                          <p className="text-gray-500 text-xs">
+                            Calculé en fonction du type de véhicule et de la
+                            durée.
+                          </p>
                         </div>
                       </div>
                     </div>

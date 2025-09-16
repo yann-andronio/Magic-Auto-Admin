@@ -5,7 +5,11 @@ export default function Headerconseils() {
     <div
       className={` ${s.arriereplan} flex flex-row h-screen justify-center items-center overflow-hidden `}
     >
-      <div className="relative z-10 text-center lg:text-left w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start p-8">
+      <div
+        className="relative z-10 text-center lg:text-left w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start p-8"
+        data-aos="fade-right"
+        data-aos-duration="1500"
+      >
         <h1 className="text-white text-5xl lg:text-6xl font-extrabold mb-4 animate-fade-in-up">
           Astuces & Conseils
         </h1>
@@ -27,7 +31,11 @@ export default function Headerconseils() {
         </a>
       </div>
 
-      <div className="hidden lg:flex md:w-1/2 justify-end items-end relative">
+      <div
+        className="hidden lg:flex md:w-1/2 justify-end items-end relative"
+        data-aos="fade-left"
+        data-aos-duration="1500"
+      >
         <img src={vamepImage} alt="" />
       </div>
     </div>
