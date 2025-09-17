@@ -7,9 +7,9 @@ import useMultiModals from "../../../hooks/useMultiModals";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import ParkingEndModal from "../../../components/admin/Modals/ParkingEndModal";
-import useGestionParking from "../../../hooks/useGestionParking"; // Importez le hook mis à jour
+import useGestionParking from "../../../hooks/useGestionParking"; 
 
-// Interface de typage pour les données de la session (pour le tableau)
+
 interface SessionParking {
   id: number;
   nomClient: string;
@@ -48,7 +48,7 @@ export default function ParkingRealTime() {
     typesVehicules,
   } = useGestionParking();
 
-  // Correction du typage ici : `session` est de type `SessionParking`
+
   const ouvrirModaleFin = (session: SessionParking) => {
     setSessionACloturer(session);
     openModal("ParkingEndModal");

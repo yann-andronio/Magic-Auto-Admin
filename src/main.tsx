@@ -17,6 +17,8 @@ import Dashboard from "./pages/Admins/dashboard/Dashboard.tsx";
 import Home from "./pages/homes/Home.tsx";
 import ParkingRealTime from "./pages/Admins/parkingrealtime/ParkingRealTime.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
+import LavageVehicule from "./pages/Admins/lavagevehucule/LavageVehicule.tsx";
+import ParkingReservations from "./pages/Admins/parkingReservations/ParkingReservations.tsx";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +65,14 @@ const router = createBrowserRouter([
       {
         path: "parkingRealtime",
         element: <ParkingRealTime />,
+      },
+      {
+        path: "lavagevehicule",
+        element: <LavageVehicule />,
+      },
+      {
+        path: "parkingReservations",
+        element: <ParkingReservations />,
       },
     ],
   },
