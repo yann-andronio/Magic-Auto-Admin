@@ -48,22 +48,23 @@ const Sidebar = () => {
     },
     {
       name: "Parking en temps réel",
-      path: "/home/parkingRealtime",
+      path: "/admin/parkingRealtime",
       icon: <FaParking size={23} />,
       subMenus: [],
     },
     // {
-    //   name: "Historique",
-    //   path: "/home/historique",
-    //   icon: <FaHistory size={21} />,
-    //   subMenus: [],
+    //   name: "Historique",
+    //   path: "/home/historique",
+    //   icon: <FaHistory size={21} />,
+    //   subMenus: [],
     // },
   ];
 
   const dispatch = useDispatch();
   const closeBar = useSelector((state: RootState) => state.activeLink.closeBar);
-  const activeName = useSelector((state: RootState) => state.activeLink.activeName
-);
+  const activeName = useSelector(
+    (state: RootState) => state.activeLink.activeName
+  );
 
   const handleMenuClick = (menuName: string) => {
     if (closeBar) return;
@@ -86,14 +87,11 @@ const Sidebar = () => {
       >
         {/* Header logo */}
         <div className="flex items-center justify-center p-4 border-b border-[#3e5684]">
-          {/* {!closeBar && ( */}
           <h1 className="font-mono text-2xl font-semibold text-[#fdb73d] transition-all duration-300">
             Logo
           </h1>
-          {/* )} */}
         </div>
 
-        
         <div className="overflow-y-auto py-2 px-3 h-full">
           <ul className="space-y-2.5">
             {menus.map((menu, index) => (
@@ -102,6 +100,7 @@ const Sidebar = () => {
                   <NavLink
                     onClick={() => dispatch(setActiveName(menu.name))}
                     to={menu.path || "#"}
+                    end={menu.path === "/admin"} 
                     className={({ isActive }) =>
                       `relative flex items-center rounded-lg transition-all duration-300 p-2 
                       ${
@@ -173,21 +172,6 @@ const Sidebar = () => {
 
         {/* Foote */}
         <div className="absolute bottom-4 left-0 w-full px-4 flex flex-col space-y-3">
-          {/* <Link
-            to="/home/parametre"
-            onClick={() => dispatch(setActiveName("Paramètres"))}
-            className={`flex items-center p-2 rounded-lg transition-all duration-300 shadow-lg
-              ${
-                activeName === "Paramètres"
-                  ? "bg-[#fdb73d] text-[#1c273a] font-semibold"
-                  : "bg-white text-[#1f2937] hover:bg-[#fdb73d] hover:text-[#1c273a]"
-              }
-              ${closeBar ? "justify-center" : ""}`}
-          >
-            <MdSettings size={22} />
-            {!closeBar && <span className="ml-3">Paramètres</span>}
-          </Link> */}
-
           <button
             className={`flex items-center p-2 rounded-lg transition-all duration-300 shadow-lg
               bg-white text-[#1f2937] hover:bg-red-500 hover:text-white

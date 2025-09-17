@@ -14,8 +14,7 @@ interface CardDashboardProps {
 export const CardDashboard: React.FC<CardDashboardProps> = ({ item }) => {
   const Icon = item.icon;
 
-  const displayValue =
-    item.title === "Chiffre d'affaires" ? item.value : item.value;
+  
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl">
@@ -25,7 +24,7 @@ export const CardDashboard: React.FC<CardDashboardProps> = ({ item }) => {
             {item.title}
           </p>
           <p className="text-3xl font-bold text-gray-800 mt-2">
-            {displayValue}
+            {item.title == "Revenus" ? item.value + "  Ar"  : item.value}
           </p>
         </div>
         <div className="p-3 rounded-full bg-[#759eee] text-white shadow-sm">
