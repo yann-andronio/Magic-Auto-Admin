@@ -1,142 +1,66 @@
-import React, { useState, useMemo } from "react";
-import useMultiModals from "../../../hooks/useMultiModals";
-import { RootState } from "../../../stores/Store";
+import React, { useState, useEffect, useContext } from "react";
 import { useSelector } from "react-redux";
+import { RootState } from "../../../stores/Store";
 import Searchbar from "../../../components/admin/searchbar/Searchbar";
-import { FaPhone, FaPlus } from "react-icons/fa";
-import DetailuserParkingreseModal from "../../../components/admin/Modals/DetailuserParkingreseModal"; // Nouvelle modale pour lister les réservations d'un client
-
-// Modèle de données de réservation
-type Reservation = {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  lieuDeParking: string;
-  typevehicule: "Voiture" | "Moto" | "Vélo";
-  modelvoiture: string;
-  matriculationvehicule: string;
-  startDate: string;
-  endDate: string;
-  time: string;
-  notes: string;
-};
-
-// Données statiques qui simulent une réponse du backend
-const reservationsData: Reservation[] = [
-  {
-    name: "Jean Dupont",
-    email: "jean.dupont@email.com",
-    phone: "032 12 345 67",
-    address: "123 Rue de la Liberté",
-    lieuDeParking: "Ambohipo",
-    typevehicule: "Voiture",
-    modelvoiture: "Renault Clio",
-    matriculationvehicule: "1234 CD 56",
-    startDate: "2025-09-17T08:00:00Z",
-    endDate: "2025-09-18T18:00:00Z",
-    time: "08:00",
-    notes: "Prise en charge anticipée si possible.",
-  },
-  {
-    name: "Marie Lebrun",
-    email: "marie.lebrun@email.com",
-    phone: "034 98 765 43",
-    address: "456 Avenue de la Paix",
-    lieuDeParking: "Analamahitsy",
-    typevehicule: "Moto",
-    modelvoiture: "Yamaha MT-07",
-    matriculationvehicule: "7890 EF 12",
-    startDate: "2025-09-20T10:00:00Z",
-    endDate: "2025-09-21T12:00:00Z",
-    time: "10:00",
-    notes: "",
-  },
-  {
-    name: "Jean Dupont",
-    email: "jean.dupont@email.com",
-    phone: "032 12 345 67",
-    address: "123 Rue de la Liberté",
-    lieuDeParking: "Analakely",
-    typevehicule: "Vélo",
-    modelvoiture: "VTT",
-    matriculationvehicule: "N/A",
-    startDate: "2025-09-19T14:00:00Z",
-    endDate: "2025-09-19T16:00:00Z",
-    time: "14:00",
-    notes: "Place sécurisée demandée.",
-  },
-  {
-    name: "Sophie Dubois",
-    email: "sophie.dubois@email.com",
-    phone: "032 54 321 09",
-    address: "321 Rue de la Fontaine",
-    lieuDeParking: "Ambohipo",
-    typevehicule: "Voiture",
-    modelvoiture: "Tesla Model 3",
-    matriculationvehicule: "4567 GH 89",
-    startDate: "2025-09-22T09:00:00Z",
-    endDate: "2025-09-25T17:00:00Z",
-    time: "09:00",
-    notes: "",
-  },
-];
+import { FaPhone, FaInfoCircle } from "react-icons/fa";
+import { ReservationContext } from "../../../context/ReservationContext";
+import useMultiModals from "../../../hooks/useMultiModals";
+import DetailuserParkingreseModal from "../../../components/admin/Modals/DetailuserParkingreseModal";
 
 export default function ParkingReservations() {
   const closeBar = useSelector((state: RootState) => state.activeLink.closeBar);
-  const { modal, openModal, closModal } = useMultiModals();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedClientReservations, setSelectedClientReservations] = useState<
-    Reservation[] | null
-  >(null);
+  const { reservations, loading, error, fetchReservations } =
+    useContext(ReservationContext);
+  const { modal, openModal, closModal } = useMultiModals();
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
-  const groupedReservations = useMemo(() => {
-    const groups: { [email: string]: Reservation[] } = {};
-    reservationsData.forEach((res) => {
-      if (!groups[res.email]) {
-        groups[res.email] = [];
-      }
-      groups[res.email].push(res);
-    });
-    return groups;
-  }, []);
-
-  const clients = useMemo(
-    () => Object.values(groupedReservations),
-    [groupedReservations]
-  );
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
   const handleSearchChange = (searchString: string) => {
     setSearchTerm(searchString);
   };
 
-  const openUserReservationsListModal = (reservations: Reservation[]) => {
-    setSelectedClientReservations(reservations);
-    openModal("DetailuserParkingreseModal");
+  const handleOpenDetailsModal = (reservation:any) => {
+    setSelectedReservation(reservation);
+    openModal("detailsModal");
   };
 
-  const filteredClients = clients.filter(
-    (clientReservations) =>
-      clientReservations[0].name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      clientReservations[0].email
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+  const filteredReservations = reservations.filter(
+    (reservation) =>
+      reservation.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.lieuDeParking.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-[#33476c] text-xl font-bold">
+        Chargement des réservations...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-600 text-xl font-bold">
+        Erreur : {error}
+      </div>
+    );
+  }
 
   return (
     <div
       className={`Rigth bg-[#E6E6FA] w-full ${
         closeBar ? '"ml-16"' : ""
-      } transition-all duration-[600ms] ease-in-out ${
-        Object.values(modal).some((isOpen) => isOpen) ? "overflow-hidden" : ""
-      }`}
+      } transition-all duration-[600ms] ease-in-out`}
     >
       <div className="px-20 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <h1 className="text-3xl font-extrabold text-[#33476c] mb-4 md:mb-0">
-            Réservations de Parking
+            Toutes les Réservations
           </h1>
         </div>
 
@@ -150,48 +74,71 @@ export default function ParkingReservations() {
               <tr className="border-b border-gray-200 text-sm font-semibold uppercase text-gray-500 tracking-wider">
                 <th className="py-3 px-4">Client</th>
                 <th className="py-3 px-4 hidden md:table-cell">Contact</th>
-                <th className="py-3 px-4 text-center">Réservations</th>
+                <th className="py-3 px-4 hidden md:table-cell">Lieu</th>
+                <th className="py-3 px-4 hidden lg:table-cell">Véhicule</th>
+                <th className="py-3 px-4">Période</th>
+                <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredClients.length > 0 ? (
-                filteredClients.map((clientReservations, index) => (
+              {filteredReservations.length > 0 ? (
+                filteredReservations.map((reservation) => (
                   <tr
-                    key={index}
+                    key={reservation.id}
                     className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
                   >
                     <td className="py-4 px-4">
                       <p className="font-semibold text-[#4c5a72]">
-                        {clientReservations[0].name}
+                        {reservation.fullname}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {clientReservations[0].email}
+                        {reservation.email}
                       </p>
                     </td>
                     <td className="py-4 px-4 hidden md:table-cell">
                       <div className="flex items-center gap-2">
                         <FaPhone className="text-gray-400 text-sm" />
                         <span className="text-sm font-medium text-gray-700">
-                          {clientReservations[0].phone}
+                          {reservation.phone}
                         </span>
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-center">
+                    <td className="py-4 px-4 hidden md:table-cell">
+                      <span className="text-sm font-medium text-gray-700">
+                        {reservation.lieuDeParking}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 hidden lg:table-cell">
+                      <span className="text-sm font-medium text-gray-700">
+                        {reservation.modelvoiture}
+                      </span>
+                      <p className="text-xs text-gray-400">
+                        {reservation.matriculationvehicule}
+                      </p>
+                    </td>
+                    <td className="py-4 px-4">
+                      <p className="text-sm font-medium text-gray-700">
+                        Du:{" "}
+                        {new Date(reservation.startDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm font-medium text-gray-700">
+                        Au: {new Date(reservation.endDate).toLocaleDateString()}
+                      </p>
+                    </td>
+                    <td className="py-4 px-4">
                       <button
-                        onClick={() =>
-                          openUserReservationsListModal(clientReservations)
-                        }
-                        className="text-[#759eee] hover:text-[#33476c] transition-colors text-sm font-semibold"
+                        onClick={() => handleOpenDetailsModal(reservation)}
+                        className="text-[#759eee] hover:text-[#33476c] transition-colors flex items-center gap-2"
                       >
-                        Voir {clientReservations.length} réservation(s)
+                        <FaInfoCircle /> Détails
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="text-center py-8 text-gray-500">
-                    Aucun client trouvé.
+                  <td colSpan={6} className="text-center py-8 text-gray-500">
+                    Aucune réservation trouvée.
                   </td>
                 </tr>
               )}
@@ -199,10 +146,12 @@ export default function ParkingReservations() {
           </table>
         </div>
       </div>
-      {modal.DetailuserParkingreseModal && selectedClientReservations && (
+
+      {/* Affichage conditionnel de la modale */}
+      {modal.detailsModal && selectedReservation && (
         <DetailuserParkingreseModal
-          reservations={selectedClientReservations}
-          closeModal={() => closModal("DetailuserParkingreseModal")}
+          reservations={[selectedReservation]}
+          closeModal={() => closModal("detailsModal")}
         />
       )}
     </div>

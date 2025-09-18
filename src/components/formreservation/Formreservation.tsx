@@ -1,17 +1,22 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import { Button, Step, StepLabel, Stepper, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { format } from "date-fns";
-import { calculPriceParking, tarifsParJour, VehicleType,} from "../../utils/calculPriceParking";
+import {
+  calculPriceParking,
+  tarifsParJour,
+  VehicleType,
+} from "../../utils/calculPriceParking";
 import { Calendarfilter } from "../../components/calendarfilter/Calendarfilter";
 import ParkingRestant from "../parkingrest/Parkingreste";
+import { ReservationContext } from "../../context/ReservationContext";
+import { UserContext } from "../../context/UserContext";
 
-// Étapes de la réservation
+
 const steps = [
-  "Informations Personnelles & Lieu de parking",
+  "Informations sur le lieu de parking",
   "Disponibilité des places",
   "Informations sur le véhicule",
   "Dates",
@@ -19,16 +24,17 @@ const steps = [
   "Résumé de la réservation",
 ];
 
-
 const validationSchema = Yup.object({
-  name: Yup.string().required("Le nom est requis"),
-  email: Yup.string().email("Email invalide").required("L'email est requis"),
   phone: Yup.string().required("Le numéro de téléphone est requis"),
   address: Yup.string().required("L'adresse est requise"),
   lieuDeParking: Yup.string().required("Le lieu de parking est requis"),
-  typevehicule: Yup.string().required("Le type de véhicule est requis").oneOf(Object.keys(tarifsParJour) as VehicleType[]),
+  typevehicule: Yup.string()
+    .required("Le type de véhicule est requis")
+    .oneOf(Object.keys(tarifsParJour) as VehicleType[]),
   modelvoiture: Yup.string().required("Le modèle de voiture est requis"),
-  matriculationvehicule: Yup.string().required("La plaque d'immatriculation est requise"),
+  matriculationvehicule: Yup.string().required(
+    "La plaque d'immatriculation est requise"
+  ),
   time: Yup.string().required("L'heure est requise"),
   notes: Yup.string(),
 });
@@ -40,7 +46,15 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
 
-  const { register, handleSubmit, watch, formState: { errors }} = useForm({
+  const { createReservation, loading, error } = useContext(ReservationContext);
+  const { user } = useContext(UserContext);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
   });
@@ -49,17 +63,15 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
   const selectedlieuDeParking = watchedFields.lieuDeParking;
   const typeVehicule = watchedFields.typevehicule;
 
+
+
   const isStepValid = () => {
     switch (activeStep) {
       case 0:
         return (
-          watchedFields.name &&
-          watchedFields.email &&
           watchedFields.phone &&
           watchedFields.address &&
           watchedFields.lieuDeParking &&
-          !errors.name &&
-          !errors.email &&
           !errors.phone &&
           !errors.address &&
           !errors.lieuDeParking
@@ -94,15 +106,24 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
 
   const prevStep = () => setActiveStep((prev) => prev - 1);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const finalData = {
       ...data,
+      fullname: user?.fullname || "mbola tsisy",
+      email: user?.email || "mbola tsisy",
       startDate: startDate?.toISOString(),
       endDate: endDate?.toISOString(),
       prixTotal: calculPriceParking(startDate, endDate, typeVehicule),
     };
-    handleModalSubmit();
-    console.log(finalData);
+
+    try {
+      await createReservation(finalData);
+      alert("Réservation effectuée avec succès !");
+      handleModalSubmit();
+    } catch (err) {
+      
+      alert("Erreur lors de la réservation. Veuillez réessayer.");
+    }
   };
 
   const isFinalStep = activeStep === steps.length - 1;
@@ -111,11 +132,12 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
   return (
     <Fragment>
       <div className="flex pt-10 px-4">
+     
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="lg:bg-gradient-to-br from-[#759eee] via-[#33476c] to-[#1c273a] justify-center lg:justify-normal  shadow-2xl flex w-full max-w-6xl m-auto"
+          className="lg:bg-gradient-to-br from-[#759eee] via-[#33476c] to-[#1c273a] justify-center lg:justify-normal  shadow-2xl flex w-full max-w-6xl m-auto"
         >
           {/* Stepper à gauche */}
           <div className="w-1/3 p-6 bg-gradient-to-br from-[#759eee] to-[#33476c] hidden lg:block text-white">
@@ -157,6 +179,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
             </h3>
 
             <form onSubmit={handleSubmit(onSubmit)}>
+         
               {activeStep === 0 && (
                 <motion.div
                   key="step-0"
@@ -168,28 +191,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   <h4 className="text-xl font-semibold text-[#759eee]">
                     {steps[activeStep]}
                   </h4>
-                  <input
-                    type="text"
-                    placeholder="Nom complet"
-                    {...register("name")}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-[#759eee] outline-none transition-shadow"
-                  />
-                  {errors.name && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.name.message}
-                    </p>
-                  )}
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    {...register("email")}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-[#759eee] outline-none transition-shadow"
-                  />
-                  {errors.email && (
-                    <p className="text-red-600 text-sm mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
                   <input
                     type="tel"
                     placeholder="Téléphone"
@@ -228,7 +229,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   )}
                 </motion.div>
               )}
-
               {activeStep === 1 && (
                 <motion.div
                   key="step-1"
@@ -243,7 +243,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   <ParkingRestant lieuDeParking={selectedlieuDeParking} />
                 </motion.div>
               )}
-
               {activeStep === 2 && (
                 <motion.div
                   key="step-2"
@@ -293,7 +292,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   )}
                 </motion.div>
               )}
-
               {activeStep === 3 && (
                 <motion.div
                   key="step-3"
@@ -313,7 +311,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   />
                 </motion.div>
               )}
-
               {activeStep === 4 && (
                 <motion.div
                   key="step-4"
@@ -343,7 +340,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   />
                 </motion.div>
               )}
-
               {activeStep === 5 && (
                 <motion.div
                   key="step-5"
@@ -357,7 +353,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   </h4>
                   <Box className="bg-gray-100 p-3 rounded-xl shadow-md">
                     <div className="flex flex-wrap gap-4">
-                      {/* info pers et Parking */}
                       <div className="bg-white p-4 rounded-lg shadow-sm flex-1 min-w-[280px]">
                         <h5 className="font-bold text-[#33476c] mb-2">
                           Informations Personnelles
@@ -368,7 +363,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                               Nom :
                             </span>{" "}
                             <span className="text-gray-900">
-                              {watchedFields.name}
+                              {user?.fullname || "mbola tsisy"}
                             </span>
                           </p>
                           <p>
@@ -376,7 +371,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                               Email :
                             </span>{" "}
                             <span className="text-gray-900 break-words">
-                              {watchedFields.email}
+                              {user?.email || "mbola tsisy"}
                             </span>
                           </p>
                           <p>
@@ -405,8 +400,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                           </p>
                         </div>
                       </div>
-
-                      {/* Section Dates & Heure */}
                       <div className="bg-white p-4 rounded-lg shadow-sm flex-1 min-w-[280px]">
                         <h5 className="font-bold text-[#33476c] mb-2">
                           Détails de la réservation
@@ -455,8 +448,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                           )}
                         </div>
                       </div>
-
-                      {/* Section pour le prix */}
                       <div className="bg-white p-4 rounded-lg shadow-sm flex-1 min-w-[280px]">
                         <h5 className="font-bold text-[#33476c] mb-2">
                           Récapitulatif de paiement
@@ -485,7 +476,6 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                   </p>
                 </motion.div>
               )}
-
               {/* Boutons de navigation */}
               <div className="flex justify-between mt-8">
                 {activeStep > 0 && (
@@ -499,7 +489,7 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                 )}
                 <Button
                   onClick={isFinalStep ? handleSubmit(onSubmit) : nextStep}
-                  disabled={!isStepValid()}
+                  disabled={!isStepValid() || loading}
                   variant="contained"
                   sx={{
                     backgroundColor: "#f8c53b",
@@ -508,7 +498,11 @@ const Formreservation: React.FC<{ handleModalSubmit: () => void }> = ({
                     marginLeft: "auto",
                   }}
                 >
-                  {isFinalStep ? "Confirmer la réservation" : "Suivant"}
+                  {loading
+                    ? "Chargement..."
+                    : isFinalStep
+                    ? "Confirmer la réservation"
+                    : "Suivant"}
                 </Button>
               </div>
             </form>

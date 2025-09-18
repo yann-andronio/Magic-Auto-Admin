@@ -1,3 +1,111 @@
 {
-  "parkingSessions": []
+  "parkingSessions": [],
+  "reservations": [
+    {
+      "id": "9592",
+      "phone": "+261342290407",
+      "address": "LOT 148 parcelle 12/14 Tanamakoa TOAMASINA",
+      "lieuDeParking": "Ambohipo",
+      "typevehicule": "Vélo",
+      "modelvoiture": "k",
+      "matriculationvehicule": "k",
+      "time": "01:24",
+      "notes": "",
+      "fullname": "mbola tsisy",
+      "email": "mbola tsisy",
+      "startDate": "2025-09-01T21:24:09.000Z",
+      "endDate": "2025-09-19T21:24:09.000Z",
+      "prixTotal": 38000
+    },
+    {
+      "id": "576b",
+      "phone": "+261",
+      "address": "LOT 148 parcelle 12/14 Tanamakoa TOAMASINA",
+      "lieuDeParking": "Analamahitsy",
+      "typevehicule": "Voiture",
+      "modelvoiture": "k",
+      "matriculationvehicule": "k",
+      "time": "02:32",
+      "notes": "",
+      "fullname": "mbola tsisy",
+      "email": "mbola tsisy",
+      "startDate": "2025-08-31T21:27:52.000Z",
+      "endDate": "2025-09-20T21:27:52.000Z",
+      "prixTotal": 210000
+    },
+    {
+      "id": "947a",
+      "phone": "+261342290407",
+      "address": "Lot VT 3A Bis ZAI Andohanihato Ambohipo 101",
+      "lieuDeParking": "Ambohipo",
+      "typevehicule": "Moto",
+      "modelvoiture": "k",
+      "matriculationvehicule": "k",
+      "time": "02:39",
+      "notes": "",
+      "fullname": "mbola tsisy",
+      "email": "mbola tsisy",
+      "startDate": "2025-09-09T21:34:59.000Z",
+      "endDate": "2025-09-27T21:34:59.000Z",
+      "prixTotal": 95000
+    },
+    {
+      "id": "270d",
+      "phone": "+261342290407",
+      "address": "LOT 148 parcelle 12/14 Tanamakoa TOAMASINA",
+      "lieuDeParking": "Analamahitsy",
+      "typevehicule": "Moto",
+      "modelvoiture": "nissan",
+      "matriculationvehicule": "2302 TAB",
+      "time": "02:37",
+      "notes": "",
+      "fullname": "mbola tsisy",
+      "email": "mbola tsisy",
+      "startDate": "2025-08-31T21:37:14.000Z",
+      "endDate": "2025-09-19T21:37:14.000Z",
+      "prixTotal": 100000
+    },
+    {
+      "id": "0777",
+      "phone": "+261342290407",
+      "address": "Lot VT 3A Bis ZAI Andohanihato Ambohipo 101",
+      "lieuDeParking": "Ambohipo",
+      "typevehicule": "Moto",
+      "modelvoiture": "cynus",
+      "matriculationvehicule": "2102 TAB",
+      "time": "02:46",
+      "notes": "",
+      "fullname": "mbola tsisy",
+      "email": "mbola tsisy",
+      "startDate": "2025-08-31T21:41:21.000Z",
+      "endDate": "2025-09-18T21:41:21.000Z",
+      "prixTotal": 95000
+    }
+  ],
+  "lavages": [
+    {
+      "id": "f6d9",
+      "nomClient": "hlg",
+      "telephone": "0342290407",
+      "plaque": "346545",
+      "typeVehicule": "Vélo",
+      "typeLavage": "Graffitage et dégraissage moteur"
+    },
+    {
+      "id": "af51",
+      "nomClient": "julio",
+      "telephone": "0342290407",
+      "plaque": "346545",
+      "typeVehicule": "Moto",
+      "typeLavage": "Lavage Express"
+    },
+    {
+      "id": "b6ac",
+      "nomClient": "julio",
+      "telephone": "0342290407",
+      "plaque": "346545",
+      "typeVehicule": "Camionnette",
+      "typeLavage": "Nettoyage du châssis"
+    }
+  ]
 }

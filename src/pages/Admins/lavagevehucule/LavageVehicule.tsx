@@ -1,8 +1,10 @@
+// src/pages/admin/LavageVehicule.tsx
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../stores/Store";
 import useMultiModals from "../../../hooks/useMultiModals";
 import AddLavageModals from "../../../components/admin/Modals/AddLavageModals";
+import UpdateLavageModals from "../../../components/admin/Modals/UpdateLavageModals"; // Import du nouveau composant
 import Searchbar from "../../../components/admin/searchbar/Searchbar";
 import {
   FaPlus,
@@ -11,88 +13,60 @@ import {
   FaTruck,
   FaPhone,
   FaUser,
+  FaEdit, // Ajout de l'icône de modification
 } from "react-icons/fa";
 import CardClientDetailsLavage from "../../../components/admin/cards/CardClientDetailsLavage";
+import { useLavage, LavageData } from "../../../context/LavageContext";
 
-// Données statiques pour simuler le backend
-const lavageData = [
-  {
-    nomClient: "Jean Dupont",
-    telephone: "032 12 345 67",
-    vehicules: [
-      {
-        plaque: "1234 AB 56",
-        typeVehicule: "Voiture",
-        totalLavages: 3,
-        lavages: [
-          {
-            typeLavage: "Lavage complet",
-            dateEnregistrement: "2025-09-15T10:00:00Z",
-          },
-          {
-            typeLavage: "Lavage Express",
-            dateEnregistrement: "2025-08-20T14:30:00Z",
-          },
-          {
-            typeLavage: "Lavage complet",
-            dateEnregistrement: "2025-07-10T09:15:00Z",
-          },
-        ],
-      },
-      {
-        plaque: "7890 CD 12",
-        typeVehicule: "Moto",
-        totalLavages: 1,
-        lavages: [
-          {
-            typeLavage: "Lavage Express",
-            dateEnregistrement: "2025-09-01T11:00:00Z",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    nomClient: "Marie Lebrun",
-    telephone: "034 98 765 43",
-    vehicules: [
-      {
-        plaque: "1111 EF 22",
-        typeVehicule: "Camionnette",
-        totalLavages: 1,
-        lavages: [
-          {
-            typeLavage: "Graffitage et dégraissage moteur",
-            dateEnregistrement: "2025-09-12T16:45:00Z",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    nomClient: "Pierre Martin",
-    telephone: "033 45 678 90",
-    vehicules: [
-      {
-        plaque: "5555 GH 33",
-        typeVehicule: "Voiture",
-        totalLavages: 2,
-        lavages: [
-          {
-            typeLavage: "Lavage Premium",
-            dateEnregistrement: "2025-09-16T08:00:00Z",
-          },
-          {
-            typeLavage: "Lavage Express",
-            dateEnregistrement: "2025-09-05T12:00:00Z",
-          },
-        ],
-      },
-    ],
-  },
-];
+// Interface pour regrouper les données pour l'affichage
+interface ClientFormattedData {
+  nomClient: string;
+  telephone: string;
+  vehicules: {
+    plaque: string;
+    typeVehicule: string;
+    totalLavages: number;
+    lavages: {
+      typeLavage: string;
+      dateEnregistrement: string;
+    }[];
+  }[];
+}
 
-// Helper pour afficher l'icône du véhicule
+// Fonction utilitaire pour regrouper les lavages par client et véhicule
+const groupLavagesByClient = (lavages: LavageData[]): ClientFormattedData[] => {
+  const clientsMap = new Map<string, ClientFormattedData>();
+
+  lavages.forEach((lavage) => {
+    const clientKey = `${lavage.nomClient}-${lavage.telephone}`;
+    if (!clientsMap.has(clientKey)) {
+      clientsMap.set(clientKey, {
+        nomClient: lavage.nomClient,
+        telephone: lavage.telephone,
+        vehicules: [],
+      });
+    }
+    const client = clientsMap.get(clientKey)!;
+    let vehicule = client.vehicules.find((v) => v.plaque === lavage.plaque);
+    if (!vehicule) {
+      vehicule = {
+        plaque: lavage.plaque,
+        typeVehicule: lavage.typeVehicule,
+        totalLavages: 0,
+        lavages: [],
+      };
+      client.vehicules.push(vehicule);
+    }
+    vehicule.lavages.push({
+      typeLavage: lavage.typeLavage,
+      dateEnregistrement: "2025-09-18T10:00:00Z", // Utilise la date si ton API la fournit
+    });
+    vehicule.totalLavages = vehicule.lavages.length;
+  });
+
+  return Array.from(clientsMap.values());
+};
+
 const getIconeVehicule = (type: string) => {
   switch (type) {
     case "Voiture":
@@ -108,13 +82,22 @@ const getIconeVehicule = (type: string) => {
 };
 
 export default function LavageVehicule() {
+  const { lavages, fetchLavages, loading, error } = useLavage();
   const closeBar = useSelector((state: RootState) => state.activeLink.closeBar);
   const { modal, openModal, closModal } = useMultiModals();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedClient, setSelectedClient] = useState<any | null>(null);
+  const [selectedClient, setSelectedClient] =
+    useState<ClientFormattedData | null>(null);
+  const [selectedLavageToUpdate, setSelectedLavageToUpdate] =
+    useState<LavageData | null>(null); // Nouvel état pour le lavage à modifier
 
-  // Filtrer les données en fonction du terme de recherche
-  const filteredData = lavageData.filter(
+  useEffect(() => {
+    fetchLavages();
+  }, [fetchLavages]);
+
+  const groupedData = groupLavagesByClient(lavages);
+
+  const filteredData = groupedData.filter(
     (client) =>
       client.nomClient.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.telephone.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,7 +106,6 @@ export default function LavageVehicule() {
       )
   );
 
-  // Effet pour présélectionner le premier client au chargement ou à la mise à jour
   useEffect(() => {
     if (filteredData.length > 0 && !selectedClient) {
       setSelectedClient(filteredData[0]);
@@ -136,9 +118,47 @@ export default function LavageVehicule() {
     setSearchTerm(searchString);
   };
 
-  const handleCardClick = (client: any) => {
+  const handleCardClick = (client: ClientFormattedData) => {
     setSelectedClient(client);
   };
+
+  const handleUpdateClick = (
+    clientName: string,
+    vehiculePlaque: string,
+    lavageType: string
+  ) => {
+    // On trouve le lavage d'origine dans le tableau `lavages` en utilisant les données
+    // de la carte. Cette approche est moins performante mais évite de modifier la fonction de regroupement.
+    const lavageToUpdate = lavages.find(
+      (lavage) =>
+        lavage.nomClient === clientName &&
+        lavage.plaque === vehiculePlaque &&
+        lavage.typeLavage === lavageType
+    );
+
+    if (lavageToUpdate) {
+      setSelectedLavageToUpdate(lavageToUpdate);
+      openModal("UpdateLavageModals");
+    } else {
+      alert("Lavage non trouvé pour la modification.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-500">
+        Chargement des données...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        Erreur: {error}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -149,7 +169,6 @@ export default function LavageVehicule() {
       }`}
     >
       <div className="px-20 py-8">
-        {/* En-tête de la page */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <h1 className="text-3xl font-extrabold text-[#4c5a72] mb-4 md:mb-0">
             Historique des Lavages
@@ -163,7 +182,6 @@ export default function LavageVehicule() {
           </button>
         </div>
 
-        {/* Espace de recherche et compteur */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <Searchbar onSearch={handleSearchChange} />
           <div className="mt-4 md:mt-0 bg-white text-gray-700 shadow-md px-4 py-2 rounded-lg text-sm font-medium">
@@ -172,19 +190,18 @@ export default function LavageVehicule() {
           </div>
         </div>
 
-        {/* Contenu principal: Grille de cartes + Détails */}
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Grille de cartes des clients */}
           <div className="flex-1 max-h-[600px] overflow-y-auto pr-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {filteredData.length > 0 ? (
                 filteredData.map((client, index) => (
                   <div
-                    key={client.nomClient}
+                    key={client.nomClient + index}
                     onClick={() => handleCardClick(client)}
                     className={`bg-white rounded-xl p-6 shadow-md cursor-pointer transition-transform duration-200 transform hover:scale-[1.02]
                       ${
-                        selectedClient?.nomClient === client.nomClient
+                        selectedClient?.nomClient === client.nomClient &&
+                        selectedClient?.telephone === client.telephone
                           ? ""
                           : "hover:shadow-lg"
                       }`}
@@ -203,22 +220,39 @@ export default function LavageVehicule() {
                         Véhicules
                       </h4>
                       <div className="space-y-2">
-                        {client.vehicules.map(
-                          (vehicule: any, vehiculeIndex: number) => (
-                            <div
-                              key={vehiculeIndex}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              {getIconeVehicule(vehicule.typeVehicule)}
-                              <span className="font-semibold text-gray-700">
-                                {vehicule.plaque}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                ({vehicule.totalLavages} lavages)
-                              </span>
-                            </div>
-                          )
-                        )}
+                        {client.vehicules.map((vehicule) => (
+                          <div key={vehicule.plaque}>
+                            {vehicule.lavages.map((lavage, lavageIndex) => (
+                              <div
+                                key={lavageIndex}
+                                className="flex items-center justify-between gap-2 text-sm p-2 rounded hover:bg-gray-100 transition-colors"
+                              >
+                                <div className="flex items-center gap-2">
+                                  {getIconeVehicule(vehicule.typeVehicule)}
+                                  <span className="font-semibold text-gray-700">
+                                    {vehicule.plaque}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    - {lavage.typeLavage}
+                                  </span>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleUpdateClick(
+                                      client.nomClient,
+                                      vehicule.plaque,
+                                      lavage.typeLavage
+                                    );
+                                  }}
+                                  className="text-blue-500 hover:text-blue-700"
+                                >
+                                  <FaEdit size={16} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -231,7 +265,6 @@ export default function LavageVehicule() {
             </div>
           </div>
 
-          {/* Panneau de détails */}
           <div className="w-full lg:w-[35%]">
             {selectedClient ? (
               <CardClientDetailsLavage clientLavage={selectedClient} />
@@ -248,6 +281,12 @@ export default function LavageVehicule() {
 
       {modal.AddLavageModals && (
         <AddLavageModals closemodal={() => closModal("AddLavageModals")} />
+      )}
+      {modal.UpdateLavageModals && selectedLavageToUpdate && (
+        <UpdateLavageModals
+          closemodal={() => closModal("UpdateLavageModals")}
+          initialData={selectedLavageToUpdate}
+        />
       )}
     </div>
   );

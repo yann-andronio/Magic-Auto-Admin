@@ -19,6 +19,8 @@ import ParkingRealTime from "./pages/Admins/parkingrealtime/ParkingRealTime.tsx"
 import { AuthProvider } from "./context/AuthContext.tsx";
 import LavageVehicule from "./pages/Admins/lavagevehucule/LavageVehicule.tsx";
 import ParkingReservations from "./pages/Admins/parkingReservations/ParkingReservations.tsx";
+import { ReservationProvider } from "./context/ReservationContext.tsx";
+import { LavageProvider } from "./context/LavageContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -83,7 +85,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <ReservationProvider>
+            <LavageProvider>
+              <RouterProvider router={router} />
+            </LavageProvider>
+          </ReservationProvider>
         </AuthProvider>
       </PersistGate>
     </Provider>

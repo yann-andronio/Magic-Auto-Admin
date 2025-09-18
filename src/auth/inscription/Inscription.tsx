@@ -1,8 +1,8 @@
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   HiOutlineMail,
   HiOutlineLockClosed,
@@ -11,6 +11,7 @@ import {
 } from "react-icons/hi";
 import { MdErrorOutline } from "react-icons/md";
 import { motion } from "framer-motion";
+import { AuthContext } from "../../context/AuthContext";
 import s from "./inscription.module.css";
 
 type FormValues = {
@@ -21,6 +22,8 @@ type FormValues = {
 };
 
 const Inscription: React.FC = () => {
+  const { register: registerContext } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -47,9 +50,27 @@ const Inscription: React.FC = () => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-  };
+ const onSubmit = async (data: FormValues) => {
+   setErrorMessage(""); 
+
+   
+   const registrationDataAlefa = {
+     full_name: data.fullName, 
+     email: data.email,
+     password: data.password,
+   };
+
+   const success = await registerContext(registrationDataAlefa);
+
+   if (success) {
+     console.log(
+       "Inscription réussie ! Redirection vers la page de connexion..."
+     );
+     navigate("/"); 
+   } else {
+     setErrorMessage("Erreur lors de l'inscription. Veuillez réessayer.");
+   }
+ };
 
   return (
     <Fragment>

@@ -1,12 +1,14 @@
-// src/components/AddLavageModals.tsx
+// src/components/admin/Modals/UpdateLavageModals.tsx
+import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { IoMdClose } from "react-icons/io";
 import { useLavage, LavageData } from "../../../context/LavageContext";
 
-// Schéma de validation
+// Le schéma de validation reste le même
 const schema = yup.object().shape({
+  id: yup.string().required(),
   nomClient: yup.string().required("Le nom du client est requis"),
   telephone: yup
     .string()
@@ -20,8 +22,8 @@ const schema = yup.object().shape({
   typeLavage: yup.string().required("Le type de lavage est requis"),
 });
 
-// Type du formulaire basé sur le schéma, sans l'ID
-type FormData = Omit<LavageData, "id">;
+// Le type des données du formulaire, qui inclut l'ID
+type FormData = yup.InferType<typeof schema>;
 
 const vehicleTypes = ["Voiture", "Moto", "Vélo", "Camionnette"];
 const typeDeLavage = [
@@ -33,13 +35,16 @@ const typeDeLavage = [
   "Lavage Premium",
 ];
 
-type AddLavageModalProps = {
+interface UpdateLavageModalProps {
   closemodal: () => void;
-};
+  initialData: LavageData; // Le lavage à modifier
+}
 
-export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
-  // Utilisez le hook personnalisé pour accéder au contexte
-  const { createLavage, loading, error } = useLavage();
+export default function UpdateLavageModals({
+  closemodal,
+  initialData,
+}: UpdateLavageModalProps) {
+  const { updateLavage, loading } = useLavage();
 
   const {
     register,
@@ -48,22 +53,16 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
+    defaultValues: initialData, // Pré-remplir le formulaire avec les données initiales
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await createLavage(data);
-      // La fonction createLavage gère déjà l'alerte et les erreurs
-      // Nous réinitialisons et fermons la modale si l'opération a réussi
-      if (!error && !loading) {
-        // Vérifie l'état final après l'appel
-        reset();
-        closemodal();
-      }
+      await updateLavage(data.id, data);
+      reset();
+      closemodal();
     } catch (err) {
-      console.error("Erreur de soumission dans le composant", err);
-      // L'erreur est gérée par le contexte, mais on peut ajouter une alerte locale si nécessaire
-      alert("Une erreur est survenue lors de l'enregistrement.");
+      console.error("Mise à jour échouée", err);
     }
   };
 
@@ -72,7 +71,7 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-300">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-[#1c273a]">
-            Enregistrer un Lavage
+            Modifier le Lavage
           </h2>
           <button
             onClick={closemodal}
@@ -82,66 +81,84 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Champ nomClient */}
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">
-              Nom du client
+            <label
+              htmlFor="nomClient"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Nom du Client
             </label>
             <input
+              id="nomClient"
+              type="text"
               {...register("nomClient")}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#759eee] focus:border-transparent shadow-sm transition-all"
-              placeholder="Ex: John Doe"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             />
             {errors.nomClient && (
-              <p className="text-red-500 mt-1 text-sm">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.nomClient.message}
               </p>
             )}
           </div>
 
+          {/* Champ telephone */}
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">
-              Numéro de téléphone
+            <label
+              htmlFor="telephone"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Téléphone
             </label>
             <input
-              {...register("telephone")}
+              id="telephone"
               type="tel"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#759eee] focus:border-transparent shadow-sm transition-all"
-              placeholder="+261 34 12 345 67"
+              {...register("telephone")}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             />
             {errors.telephone && (
-              <p className="text-red-500 mt-1 text-sm">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.telephone.message}
               </p>
             )}
           </div>
 
+          {/* Champ plaque */}
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">
+            <label
+              htmlFor="plaque"
+              className="block text-sm font-medium text-gray-700"
+            >
               Plaque d'immatriculation
             </label>
             <input
+              id="plaque"
+              type="text"
               {...register("plaque")}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#759eee] focus:border-transparent shadow-sm transition-all"
-              placeholder="Ex: 1234 AB 56"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             />
             {errors.plaque && (
-              <p className="text-red-500 mt-1 text-sm">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.plaque.message}
               </p>
             )}
           </div>
 
+          {/* Champ typeVehicule (liste déroulante) */}
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">
-              Type de véhicule
+            <label
+              htmlFor="typeVehicule"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Type de Véhicule
             </label>
             <select
+              id="typeVehicule"
               {...register("typeVehicule")}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#759eee] focus:border-transparent shadow-sm transition-all"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             >
-              <option value="">Sélectionner un type</option>
+              <option value="">Sélectionner</option>
               {vehicleTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -149,21 +166,26 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
               ))}
             </select>
             {errors.typeVehicule && (
-              <p className="text-red-500 mt-1 text-sm">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.typeVehicule.message}
               </p>
             )}
           </div>
 
+          {/* Champ typeLavage (liste déroulante) */}
           <div>
-            <label className="block text-sm font-semibold text-gray-600 mb-1">
-              Type de lavage
+            <label
+              htmlFor="typeLavage"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Type de Lavage
             </label>
             <select
+              id="typeLavage"
               {...register("typeLavage")}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#759eee] focus:border-transparent shadow-sm transition-all"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             >
-              <option value="">Sélectionner un type de lavage</option>
+              <option value="">Sélectionner</option>
               {typeDeLavage.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -171,7 +193,7 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
               ))}
             </select>
             {errors.typeLavage && (
-              <p className="text-red-500 mt-1 text-sm">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.typeLavage.message}
               </p>
             )}
@@ -180,9 +202,9 @@ export default function AddLavageModals({ closemodal }: AddLavageModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#759eee] to-[#4a6cf7] text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-60"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold shadow-lg hover:scale-105 transition-transform duration-200 disabled:opacity-60"
           >
-            {loading ? "Enregistrement..." : "Enregistrer le Lavage"}
+            {loading ? "Mise à jour..." : "Mettre à jour le Lavage"}
           </button>
         </form>
       </div>

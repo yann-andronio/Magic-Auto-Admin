@@ -1,7 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
 import API from "../api/Api";
-
-// Remplacement d'EncryptedStorage par localStorage
 const storage = {
   getItem: (key: string) => localStorage.getItem(key),
   setItem: (key: string, value: string) => localStorage.setItem(key, value),
@@ -13,7 +11,6 @@ export interface UserI {
   full_name: string;
   email: string;
   type: "USER" | "ADMIN";
-  image?: string;
   telnumber?: string;
 }
 
@@ -74,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const res = await API.post("/api/v1/auth/login/", { email, password });
+      const res = await API.post("/login", { email, password });
       const { token, member } = res.data;
 
       storage.setItem("accessToken", token);
@@ -94,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-       await API.post("/api/v1/auth/register/", {
+       await API.post("/register", {
          full_name: data.full_name,
          email: data.email,
          password: data.password,
