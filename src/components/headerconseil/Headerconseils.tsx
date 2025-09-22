@@ -1,5 +1,5 @@
 import s from "./headerconseil.module.css";
-import vamepImage from "../../../public/assets/image/deco/vamep.png";
+import vamepImage from "../../image/deco/vamep.png";
 export default function Headerconseils() {
   return (
     <div

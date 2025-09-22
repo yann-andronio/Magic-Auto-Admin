@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import s from "./header.module.css";
+import moto from "../../image/deco/Moto.png";
 
 export default function Header() {
   return (
@@ -11,7 +12,7 @@ export default function Header() {
         data-aos="fade-right"
         data-aos-duration="2000"
       >
-        <img src="./assets/image/deco/Moto.png" alt="" />
+        <img src={moto} alt="" />
       </div>
       <div
         className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative z-10"

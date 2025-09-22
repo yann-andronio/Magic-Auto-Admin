@@ -12,6 +12,7 @@ import {
 import { MdErrorOutline } from "react-icons/md";
 import { motion } from "framer-motion";
 import s from "./connexion.module.css";
+import axios from "axios";
 
 
 type FormValues = {
@@ -52,6 +53,25 @@ const Connexion: React.FC = () => {
 
   };
 
+  //  const [error, setError] = useState("");
+
+  //  const afficheerror = () => {
+  //    axios
+  //      .get("http://localhost:8080/clients/1")
+  //      .then((response) => {
+  //        console.log(response);
+  //        setError(""); 
+  //      })
+  //      .catch((err) => {
+  //        if (err.response && err.response.data && err.response.data.messages) {
+  //          setError(err.response.data.messages.error);
+  //        } else {
+  //          setError("Une erreur est survenue !");
+  //        }
+  //        console.log(err);
+  //      });
+  //  };
+
   return (
     <Fragment>
       <div
@@ -63,6 +83,9 @@ const Connexion: React.FC = () => {
           </h1>
           <img src="./assets/image/deco/logdeco.png" alt="" />
         </div>
+
+        {/* <button  onClick={afficheerror}>errrrrr</button>
+        {error && (<h1>{error}</h1>)} */}
 
         <div
           className={`${s.droite} w-full lg:w-1/2 flex flex-col justify-center items-center relative`}
