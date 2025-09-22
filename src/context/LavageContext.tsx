@@ -1,4 +1,3 @@
-// src/context/LavageContext.tsx
 import {
   createContext,
   useState,
@@ -6,40 +5,40 @@ import {
   useContext,
   useCallback,
 } from "react";
-import API from "../api/Api"; // Assure-toi que ce chemin d'accès est correct
+import API from "../api/Api"; 
 
-// Définir les types des données du formulaire de lavage
+
 export interface LavageData {
-  id: string; // L'API pourrait assigner un ID après la création
+  id: string; 
   nomClient: string;
   telephone: string;
   plaque: string;
   typeVehicule: string;
   typeLavage: string;
-  // Ajoute d'autres champs si nécessaire (ex: date, prix, etc.)
+  // ajoutegna chap hafa raha misy tsy ato 
 }
 
-// Définir le type du contexte
+
 interface LavageContextType {
   lavages: LavageData[];
   createLavage: (data: Omit<LavageData, "id">) => Promise<void>;
-  updateLavage: (id: string, data: Omit<LavageData, "id">) => Promise<void>; // Ajout de la fonction de mise à jour
+  updateLavage: (id: string, data: Omit<LavageData, "id">) => Promise<void>; 
   fetchLavages: () => Promise<void>;
   loading: boolean;
   error: string | null;
 }
 
-// Créer le contexte avec des valeurs par défaut
+
 export const LavageContext = createContext<LavageContextType>({
   lavages: [],
   createLavage: () => Promise.resolve(),
-  updateLavage: () => Promise.resolve(), // Ajout de la fonction de mise à jour par défaut
+  updateLavage: () => Promise.resolve(), 
   fetchLavages: () => Promise.resolve(),
   loading: false,
   error: null,
 });
 
-// Créer le fournisseur de contexte
+
 export const LavageProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
@@ -69,7 +68,7 @@ export const LavageProvider: React.FC<{
     setLoading(true);
     setError(null);
     try {
-      // JSON Server utilise la méthode PUT pour la mise à jour complète
+      // JSON Server  mise à jour complète
       const response = await API.put(`/lavages/${id}`, data);
       setLavages((prevLavages) =>
         prevLavages.map((lavage) => (lavage.id === id ? response.data : lavage))
@@ -104,7 +103,7 @@ export const LavageProvider: React.FC<{
       value={{
         lavages,
         createLavage,
-        updateLavage, // Ajout de la fonction de mise à jour au contexte
+        updateLavage, 
         fetchLavages,
         loading,
         error,
